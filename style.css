@@ -1,0 +1,50 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    background: #000;
+    color: #fff;
+    font-family: -apple-system, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
+}
+
+#time {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 105px;
+    display: block;
+    padding: 30px;
+    font-size: 75px;
+    line-height: 75px;
+    font-weight: bold;
+    border-bottom: 2px solid #fff;
+}
+
+#forecast {
+    display: block;
+    margin-top: 100px;
+    padding: 30px;
+}
+
+.forecast-item {
+    float: left;
+    display: inline;
+    width: 100px;
+    margin-right: 50px;
+    text-align: center;
+}
+
+h2 {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+h3 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+p {
+    margin: 0px;
+}
