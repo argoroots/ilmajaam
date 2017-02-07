@@ -42,14 +42,14 @@
             var lon = 24.7102471
             var dates = []
             var sunsets = {}
-            
+
             var isNight = function (date) {
                 var dt = new Date(date)
                 var day = date.substring(0, 10)
-                
-                if (!sunsets[day]) { 
+
+                if (!sunsets[day]) {
                     jQuery.ajax({
-                        async: false, 
+                        async: false,
                         url: 'http://api.sunrise-sunset.org/json?formatted=0&lat=' + lat + '&lng=' + lon + '&date=' + day,
                         dataType: 'json',
                         success: function(data) {
@@ -60,18 +60,18 @@
                         }
                     })
                 }
-                
+
                 if (dt < sunsets[day].sunrise || dt > sunsets[day].sunset) {
                     return 1
                 } else {
                     return 0
                 }
             }
-            
+
             var getDayName = function (date) {
                 today = new Date().getDate()
                 day = parseInt(date.substr(8, 2))
-                
+
                 if (day === today) {
                     return 'täna'
                 } else if (day === today + 1) {
@@ -83,15 +83,15 @@
 
             $.ajax({
                 type: 'GET',
-                url: 'https://api.met.no/weatherapi/locationforecast/1.9/?lat=' + lat + ';lon=' + lon, 
+                url: 'https://api.met.no/weatherapi/locationforecast/1.9/?lat=' + lat + ';lon=' + lon,
                 dataType: 'xml',
                 success: function (xml) {
                     $(xml).find('temperature').each(function () {
                         var time = $(this).parents('time')
                         var symbol = $(xml).find('time[from="' + time.attr('from') + '"] symbol')
-                        
-                        if (symbol.attr('number')) { 
-                        
+
+                        if (symbol.attr('number')) {
+
                             dates.push({
                                 date: time.attr('from'),
                                 symbolTitle: symbol.attr('id'),
