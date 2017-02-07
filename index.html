@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Ilmajaam</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <style media="screen">
+            body {
+                margin: 50px;
+                background: #000;
+                color: #fff;
+            }
+            #forecast {
+                overflow-x: scroll;
+                overflow-y: hidden;
+                white-space: nowrap;
+            }
+            .time {
+                float: left;
+                display: inline;
+                width: 100px;
+                margin-right: 50px;
+                text-align: center;
+            }
+            h2 {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            h3 {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            p {
+                margin: 0px;
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+        <script type="text/javascript">
+            var lat = 59.3749651
+            var lon = 24.7102471
+            var dates = []
+            var sunsets = {}
+            
+            var isNight = function (date) {
+                var dt = new Date(date)
+                var day = date.substring(0, 10)
+                
+                if (!sunsets[day]) { 
+                    jQuery.ajax({
+                        async: false, 
+                        url: 'http://api.sunrise-sunset.org/json?formatted=0&lat=' + lat + '&lng=' + lon + '&date=' + day,
+                        dataType: 'json',
+                        success: function(data) {
+                            sunsets[day] = {
+                                sunrise: new Date(data.results.sunrise),
+                                sunset: new Date(data.results.sunset)
+                            }
+                        }
+                    })
+                }
+                
+                if (dt < sunsets[day].sunrise || dt > sunsets[day].sunset) {
+                    return 1
+                } else {
+                    return 0
+                }
+            }
+            
+            var getDayName = function (date) {
+                today = new Date().getDate()
+                day = parseInt(date.substr(8, 2))
+                
+                if (day === today) {
+                    return 'täna'
+                } else if (day === today + 1) {
+                    return 'homme'
+                } else {
+                    return day + '.'
+                }
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: 'https://api.met.no/weatherapi/locationforecast/1.9/?lat=' + lat + ';lon=' + lon, 
+                dataType: 'xml',
+                success: function (xml) {
+                    $(xml).find('temperature').each(function () {
+                        var time = $(this).parents('time')
+                        var symbol = $(xml).find('time[from="' + time.attr('from') + '"] symbol')
+                        
+                        if (symbol.attr('number')) { 
+                        
+                            dates.push({
+                                date: time.attr('from'),
+                                symbolTitle: symbol.attr('id'),
+                                symbolUrl: symbol.attr('number') ? 'https://api.met.no/weatherapi/weathericon/1.1/?symbol=' + symbol.attr('number') + ';is_night=' + isNight(time.attr('from')) + ';content_type=image/svg%2Bxml' : null,
+                                temperature: time.find('temperature').attr('value'),
+                                minTemperature: time.find('minTemperature').attr('value'),
+                                maxTemperature: time.find('maxTemperature').attr('value'),
+                                windDirection: time.find('windDirection').attr('deg'),
+                                windSpeed: time.find('windSpeed').attr('mps')
+                            })
+                        }
+                    })
+                }
+            }).done(function ( data ) {
+                dates = _.orderBy(dates, ['date'])
+
+                var row = []
+                var day = 0
+                _.forEach(dates, function(d) {
+                    var currentDay = getDayName(d.date)
+                    row.push('<div class="time">')
+                    row.push('<h2>')
+                    if (day !== currentDay) {
+                        day = currentDay
+                        row.push(currentDay)
+                    } else {
+                        row.push(' ')
+                    }
+                    row.push('</h2>')
+                    row.push('<img src="' + d.symbolUrl + '" alt="' + d.symbolTitle + '" />')
+                    row.push('<p>')
+                    row.push(new Date(d.date).toLocaleString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).substring(11))
+                    row.push('</p>')
+                    row.push('<h3>')
+                    row.push(d.temperature)
+                    row.push('°')
+                    row.push('</h3>')
+                    row.push('<p>')
+                    row.push(Math.round(parseFloat(d.windSpeed)))
+                    row.push('<small> m/s</small>')
+                    row.push('</p>')
+                    row.push('<p style="-webkit-transform: rotate(' + (parseFloat(d.windDirection) + 90) + 'deg);">⟶</p>')
+                    row.push('</div>')
+                })
+                $('#forecast').append(row.join(''))
+                $('#forecast').css('width', dates.length * 150 + "px")
+            })
+        </script>
+    </head>
+    <body>
+        <div id="forecast">
+        </div>
+    </body>
+</html>
