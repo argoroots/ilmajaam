@@ -19,7 +19,7 @@ $(function() {
             ('0' + dt.getMinutes()).substr(-2),
             ('0' + dt.getSeconds()).substr(-2)
         ]
-        $('#time').html(dtArr.join(':'))
+        $('#time').html(dtArr.join('.'))
     }
     updateTime()
     setInterval(updateTime, 1000)
