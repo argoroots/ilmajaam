@@ -40,6 +40,15 @@
             var lat = 59.3748852
             var lon = 24.7099626
             var dates = []
+            var weekDays = [
+                'pühapäev',
+                'esmaspäev',
+                'teisipäev',
+                'kolmapäev',
+                'neljapäev',
+                'reede',
+                'laupäev',
+            ]
 
             var setNight = function () {
                 var img = $(this)
@@ -57,17 +66,24 @@
                 })
             }
 
-            var getDayName = function (date) {
+            var getTimeInfo = function (date) {
                 today = new Date().getDate()
-                day = parseInt(date.substr(8, 2))
+                dt = new Date(date)
 
-                if (day === today) {
-                    return 'täna'
-                } else if (day === today + 1) {
-                    return 'homme'
-                } else {
-                    return day + '.'
+                var result = {
+                    day: dt.getDate(),
+                    hour: dt.getHours()
                 }
+
+                if (result.day === today) {
+                    result.dayName = 'täna'
+                } else if (result.day === today + 1) {
+                    result.dayName = 'homme'
+                } else {
+                    result.dayName = weekDays[dt.getDay()]
+                }
+
+                return result
             }
 
             $.ajax({
@@ -85,8 +101,6 @@
                                 symbolTitle: symbol.attr('id'),
                                 symbolUrl: symbol.attr('number') ? 'https://api.met.no/weatherapi/weathericon/1.1?symbol=' + symbol.attr('number') + '&is_night=1&content_type=image/svg%2Bxml' : null,
                                 temperature: time.find('temperature').attr('value'),
-                                minTemperature: time.find('minTemperature').attr('value'),
-                                maxTemperature: time.find('maxTemperature').attr('value'),
                                 windDirection: time.find('windDirection').attr('deg'),
                                 windSpeed: time.find('windSpeed').attr('mps')
                             })
@@ -98,20 +112,28 @@
 
                 var row = []
                 var day = 0
-                _.forEach(dates, function(d) {
-                    var currentDay = getDayName(d.date)
+                var count = 0
+                var firstHour = getTimeInfo(dates[0].date)
+
+                _.forEach(dates, function(d, idx) {
+                    var currentHour = getTimeInfo(d.date)
+
+                    if (idx > 0 && firstHour.day !== currentHour.day && [2, 8, 14, 20].indexOf(currentHour.hour) === -1) { return }
+                    if (idx > 0 && firstHour.day === currentHour.day && firstHour.hour < 14 && [2, 8, 14, 20].indexOf(currentHour.hour) === -1) { return }
+                    if (idx > 0 && firstHour.day === currentHour.day && firstHour.hour > 14 && firstHour.hour % 2 !== currentHour.hour % 2) { return }
+
                     row.push('<div class="time">')
                     row.push('<h2>')
-                    if (day !== currentDay) {
-                        day = currentDay
-                        row.push(currentDay)
+                    if (day !== currentHour.dayName) {
+                        day = currentHour.dayName
+                        row.push(currentHour.dayName)
                     } else {
                         row.push(' ')
                     }
                     row.push('</h2>')
                     row.push('<img src="' + d.symbolUrl + '" alt="' + d.symbolTitle + '" data-date="' + d.date + '" />')
                     row.push('<p>')
-                    row.push(new Date(d.date).toLocaleString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).substring(11))
+                    row.push(('0' + currentHour.hour).substr(-2) + '.00')
                     row.push('</p>')
                     row.push('<h3>')
                     row.push(d.temperature)
@@ -123,8 +145,10 @@
                     row.push('</p>')
                     row.push('<p style="-webkit-transform: rotate(' + (parseFloat(d.windDirection) + 90) + 'deg);">⟶</p>')
                     row.push('</div>')
+
+                    count++
                 })
-                $('#forecast').css('width', dates.length * 150 + 'px')
+                $('#forecast').css('width', count * 150 + 'px')
                 $('#forecast').append(row.join(''))
 
                 $('.time img').each(setNight)
