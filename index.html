@@ -5,12 +5,31 @@
         <title>Ilmajaam</title>
         <style media="screen">
             body {
-                margin: 50px;
+                margin: 0px;
+                padding: 0px;
                 background: #000;
                 color: #fff;
                 font-family: -apple-system, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
             }
-            .time {
+            #time {
+                position: fixed;
+                top: 0px;
+                left: 0px;
+                right: 0px;
+                height: 105px;
+                display: block;
+                padding: 30px;
+                font-size: 75px;
+                line-height: 75px;
+                font-weight: bold;
+                border-bottom: 2px solid #fff;
+            }
+            #forecast {
+                display: block;
+                margin-top: 100px;
+                padding: 30px;
+            }
+            .forecast-item {
                 float: left;
                 display: inline;
                 width: 100px;
@@ -18,8 +37,9 @@
                 text-align: center;
             }
             h2 {
-                margin-top: 10px;
+                margin-top: 0px;
                 margin-bottom: 10px;
+                text-align: left;
             }
             h3 {
                 margin-top: 10px;
@@ -44,6 +64,18 @@
                 'reede',
                 'laupäev',
             ]
+
+            var updateTime = function () {
+                dt = new Date()
+                dtArr = [
+                    ('0' + dt.getHours()).substr(-2),
+                    ('0' + dt.getMinutes()).substr(-2),
+                    ('0' + dt.getSeconds()).substr(-2)
+                ]
+                $('#time').html(dtArr.join(':'))
+            }
+            updateTime()
+            setInterval(updateTime, 1000)
 
             var setNight = function () {
                 var img = $(this)
@@ -117,7 +149,7 @@
                     if (idx > 0 && firstHour.day === currentHour.day && firstHour.hour < 14 && [2, 8, 14, 20].indexOf(currentHour.hour) === -1) { return }
                     if (idx > 0 && firstHour.day === currentHour.day && firstHour.hour > 14 && firstHour.hour % 2 !== currentHour.hour % 2) { return }
 
-                    row.push('<div class="time">')
+                    row.push('<div class="forecast-item">')
                     row.push('<h2>')
                     if (day !== currentHour.dayName) {
                         day = currentHour.dayName
@@ -151,6 +183,7 @@
         </script>
     </head>
     <body>
+        <div id="time"></div>
         <div id="forecast">
         </div>
     </body>
