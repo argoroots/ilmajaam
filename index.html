@@ -50,12 +50,13 @@
                 if (!sunsets[day]) {
                     jQuery.ajax({
                         async: false,
-                        url: 'http://api.sunrise-sunset.org/json?formatted=0&lat=' + lat + '&lng=' + lon + '&date=' + day,
-                        dataType: 'json',
-                        success: function(data) {
+                        url: 'https://api.met.no/weatherapi/sunrise/1.1/?lat=' + lat + '&lon=' + lon + '&date=' + day,
+                        dataType: 'xml',
+                        success: function(xml) {
+                            var sun = $(xml).find('sun')
                             sunsets[day] = {
-                                sunrise: new Date(data.results.sunrise),
-                                sunset: new Date(data.results.sunset)
+                                sunrise: new Date(sun.attr('rise')),
+                                sunset: new Date(sun.attr('set'))
                             }
                         }
                     })
@@ -83,7 +84,7 @@
 
             $.ajax({
                 type: 'GET',
-                url: 'https://api.met.no/weatherapi/locationforecast/1.9/?lat=' + lat + ';lon=' + lon,
+                url: 'https://api.met.no/weatherapi/locationforecast/1.9/?lat=' + lat + '&lon=' + lon,
                 dataType: 'xml',
                 success: function (xml) {
                     $(xml).find('temperature').each(function () {
@@ -95,7 +96,7 @@
                             dates.push({
                                 date: time.attr('from'),
                                 symbolTitle: symbol.attr('id'),
-                                symbolUrl: symbol.attr('number') ? 'https://api.met.no/weatherapi/weathericon/1.1/?symbol=' + symbol.attr('number') + ';is_night=' + isNight(time.attr('from')) + ';content_type=image/svg%2Bxml' : null,
+                                symbolUrl: symbol.attr('number') ? 'https://api.met.no/weatherapi/weathericon/1.1/?symbol=' + symbol.attr('number') + '&is_night=' + isNight(time.attr('from')) + '&content_type=image/svg%2Bxml' : null,
                                 temperature: time.find('temperature').attr('value'),
                                 minTemperature: time.find('minTemperature').attr('value'),
                                 maxTemperature: time.find('maxTemperature').attr('value'),
