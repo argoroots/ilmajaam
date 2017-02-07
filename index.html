@@ -40,32 +40,21 @@
             var lat = 59.3749651
             var lon = 24.7102471
             var dates = []
-            var sunsets = {}
 
-            var isNight = function (date) {
-                var dt = new Date(date)
-                var day = date.substring(0, 10)
+            var setNight = function () {
+                var img = $(this)
+                var dt = new Date(img.data('date'))
 
-                if (!sunsets[day]) {
-                    jQuery.ajax({
-                        async: false,
-                        url: 'https://roots.entu.ee/metno/sunrise/1.1/?lat=' + lat + '&lon=' + lon + '&date=' + day,
-                        dataType: 'xml',
-                        success: function(xml) {
-                            var sun = $(xml).find('sun')
-                            sunsets[day] = {
-                                sunrise: new Date(sun.attr('rise')),
-                                sunset: new Date(sun.attr('set'))
-                            }
+                jQuery.ajax({
+                    url: 'https://roots.entu.ee/metno/sunrise/1.1/?lat=' + lat + '&lon=' + lon + '&date=' + img.data('date').substring(0, 10),
+                    dataType: 'xml',
+                    success: function(xml) {
+                        var sun = $(xml).find('sun')
+                        if (dt >= new Date(sun.attr('rise')) && dt <= new Date(sun.attr('set'))) {
+                            img.attr('src', img.attr('src').replace('is_night=1', 'is_night=0'))
                         }
-                    })
-                }
-
-                if (dt < sunsets[day].sunrise || dt > sunsets[day].sunset) {
-                    return 1
-                } else {
-                    return 0
-                }
+                    }
+                })
             }
 
             var getDayName = function (date) {
@@ -95,7 +84,7 @@
                             dates.push({
                                 date: time.attr('from'),
                                 symbolTitle: symbol.attr('id'),
-                                symbolUrl: symbol.attr('number') ? 'https://api.met.no/weatherapi/weathericon/1.1/?symbol=' + symbol.attr('number') + '&is_night=' + isNight(time.attr('from')) + '&content_type=image/svg%2Bxml' : null,
+                                symbolUrl: symbol.attr('number') ? 'https://api.met.no/weatherapi/weathericon/1.1/?symbol=' + symbol.attr('number') + '&is_night=1&content_type=image/svg%2Bxml' : null,
                                 temperature: time.find('temperature').attr('value'),
                                 minTemperature: time.find('minTemperature').attr('value'),
                                 maxTemperature: time.find('maxTemperature').attr('value'),
@@ -121,7 +110,7 @@
                         row.push(' ')
                     }
                     row.push('</h2>')
-                    row.push('<img src="' + d.symbolUrl + '" alt="' + d.symbolTitle + '" />')
+                    row.push('<img src="' + d.symbolUrl + '" alt="' + d.symbolTitle + '" data-date="' + d.date + '" />')
                     row.push('<p>')
                     row.push(new Date(d.date).toLocaleString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).substring(11))
                     row.push('</p>')
@@ -136,8 +125,10 @@
                     row.push('<p style="-webkit-transform: rotate(' + (parseFloat(d.windDirection) + 90) + 'deg);">⟶</p>')
                     row.push('</div>')
                 })
+                $('#forecast').css('width', dates.length * 150 + 'px')
                 $('#forecast').append(row.join(''))
-                $('#forecast').css('width', dates.length * 150 + "px")
+
+                $('.time img').each(setNight)
             })
         </script>
     </head>
