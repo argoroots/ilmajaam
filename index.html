@@ -49,7 +49,7 @@
                 if (!sunsets[day]) {
                     jQuery.ajax({
                         async: false,
-                        url: 'https://api.met.no/weatherapi/sunrise/1.1/?lat=' + lat + '&lon=' + lon + '&date=' + day,
+                        url: 'https://roots.entu.ee/metno/sunrise/1.1/?lat=' + lat + '&lon=' + lon + '&date=' + day,
                         dataType: 'xml',
                         success: function(xml) {
                             var sun = $(xml).find('sun')
@@ -83,7 +83,7 @@
 
             $.ajax({
                 type: 'GET',
-                url: 'https://api.met.no/weatherapi/locationforecast/1.9/?lat=' + lat + '&lon=' + lon,
+                url: 'https://roots.entu.ee/metno/locationforecast/1.9/?lat=' + lat + '&lon=' + lon,
                 dataType: 'xml',
                 success: function (xml) {
                     $(xml).find('temperature').each(function () {
