@@ -127,6 +127,6 @@ $(function() {
         $('#forecast').css('width', count * 150 + 'px')
         $('#forecast').html(row.join(''))
 
-        $('.time img').each(setNight)
+        $('.forecast-item img').each(setNight)
     })
 })
