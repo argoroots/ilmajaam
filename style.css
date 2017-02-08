@@ -6,7 +6,7 @@ body {
     font-family: -apple-system, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
 }
 
-#time {
+header {
     position: fixed;
     top: 0px;
     left: 0px;
@@ -18,6 +18,14 @@ body {
     line-height: 75px;
     font-weight: bold;
     border-bottom: 2px solid #fff;
+}
+
+#time {
+    float: left;
+}
+
+#temperature {
+    float: right;
 }
 
 #forecast {

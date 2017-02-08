@@ -94,7 +94,7 @@ $(function() {
 
             if (idx > 0 && firstHour.day !== currentHour.day && [2, 8, 14, 20].indexOf(currentHour.hour) === -1) { return }
             if (idx > 0 && firstHour.day === currentHour.day && firstHour.hour < 14 && [2, 8, 14, 20].indexOf(currentHour.hour) === -1) { return }
-            if (idx > 0 && firstHour.day === currentHour.day && firstHour.hour > 14 && firstHour.hour % 2 !== currentHour.hour % 2) { return }
+            // if (idx > 0 && firstHour.day === currentHour.day && firstHour.hour > 14 && firstHour.hour % 2 !== currentHour.hour % 2) { return }
 
             row.push('<div class="forecast-item">')
             row.push('<h2>')
@@ -122,8 +122,10 @@ $(function() {
 
             count++
         })
+
+        $('#temperature').html(dates[0].temperature + '°')
         $('#forecast').css('width', count * 150 + 'px')
-        $('#forecast').append(row.join(''))
+        $('#forecast').html(row.join(''))
 
         $('.time img').each(setNight)
     })
