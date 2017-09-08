@@ -17,7 +17,7 @@ $(function() {
     }
 
     var updateTime = function () {
-        dt = getServerTime
+        dt = getServerTime()
         dtArr = [
             ('0' + dt.getHours()).substr(-2),
             ('0' + dt.getMinutes()).substr(-2),
@@ -45,7 +45,7 @@ $(function() {
     }
 
     var getTimeInfo = function (date) {
-        today = getServerTime.getDate()
+        today = getServerTime().getDate()
         dt = new Date(date)
 
         var result = {
