@@ -12,8 +12,12 @@ $(function() {
         'laupäev',
     ]
 
+    var getServerTime = function () {
+        return new Date($.ajax({async: false}).getResponseHeader('Date'))
+    }
+
     var updateTime = function () {
-        dt = new Date()
+        dt = getServerTime
         dtArr = [
             ('0' + dt.getHours()).substr(-2),
             ('0' + dt.getMinutes()).substr(-2),
@@ -41,7 +45,7 @@ $(function() {
     }
 
     var getTimeInfo = function (date) {
-        today = new Date().getDate()
+        today = getServerTime.getDate()
         dt = new Date(date)
 
         var result = {
