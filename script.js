@@ -33,7 +33,7 @@ $(function() {
         var dt = new Date(img.data('date'))
 
         jQuery.ajax({
-            url: 'https://s5289n6ghc.execute-api.eu-west-1.amazonaws.com/prod/metno/sunrise/1.1?lat=' + lat + '&lon=' + lon + '&date=' + img.data('date').substring(0, 10),
+            url: 'https://66c6qvcnic.execute-api.eu-west-1.amazonaws.com/prod/metno/sunrise/1.1?lat=' + lat + '&lon=' + lon + '&date=' + img.data('date').substring(0, 10),
             dataType: 'xml',
             success: function(xml) {
                 var sun = $(xml).find('sun')
@@ -66,7 +66,7 @@ $(function() {
 
     $.ajax({
         type: 'GET',
-        url: 'https://s5289n6ghc.execute-api.eu-west-1.amazonaws.com/prod/metno/locationforecast/1.9?lat=' + lat + '&lon=' + lon,
+        url: 'https://66c6qvcnic.execute-api.eu-west-1.amazonaws.com/prod/metno/locationforecast/1.9?lat=' + lat + '&lon=' + lon,
         dataType: 'xml',
         success: function (xml) {
             $(xml).find('temperature').each(function () {
