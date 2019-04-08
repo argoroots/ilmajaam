@@ -13,11 +13,15 @@ $(function() {
     ]
 
     var getServerTime = function () {
-        return new Date($.ajax({async: false}).getResponseHeader('Date'))
+        return new Date($.ajax({ async: false }).getResponseHeader('Date'))
+    }
+
+    var getLocalTime = function () {
+        return new Date()
     }
 
     var updateTime = function () {
-        dt = getServerTime()
+        dt = getLocalTime()
         dtArr = [
             ('0' + dt.getHours()).substr(-2),
             ('0' + dt.getMinutes()).substr(-2),
@@ -45,7 +49,7 @@ $(function() {
     }
 
     var getTimeInfo = function (date) {
-        today = getServerTime().getDate()
+        today = getLocalTime().getDate()
         dt = new Date(date)
 
         var result = {
