@@ -106,7 +106,7 @@ $(function() {
             row.push(('0' + currentHour.hour).substr(-2) + '.00')
             row.push('</p>')
             row.push('<h3>')
-            row.push(d.temperature)
+            row.push(Math.round(d.temperature))
             row.push('°')
             row.push('</h3>')
             row.push('<p>')
