@@ -1,6 +1,6 @@
 $(function() {
-    var lat = 59.3748852
-    var lon = 24.7099626
+    var lat = 59.3749
+    var lon = 24.7098
     var dates = []
     var weekDays = [
         'pühapäev',
