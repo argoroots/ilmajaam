@@ -36,7 +36,7 @@ $(function() {
         var img = $(this)
         var dt = new Date(img.data('date'))
         var offset = dt.getTimezoneOffset() / 60
-        var offsetStr = offset > 0 ? '0' + offset ? '-0' + Math.abs(offset)
+        var offsetStr = offset > 0 ? '0' + offset : '-0' + Math.abs(offset)
 
         jQuery.ajax({
             url: 'https://s9bt0o347g.execute-api.eu-central-1.amazonaws.com/sunrise/2.0?offset=' + offsetStr + ':00&lat=' + lat + '&lon=' + lon + '&date=' + img.data('date').substring(0, 10),
