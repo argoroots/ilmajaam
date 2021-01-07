@@ -32,24 +32,6 @@ $(function() {
     updateTime()
     setInterval(updateTime, 1000)
 
-    var setNight = function () {
-        var img = $(this)
-        var dt = new Date(img.data('date'))
-        var offset = dt.getTimezoneOffset() / 60
-        var offsetStr = offset > 0 ? '0' + offset : '-0' + Math.abs(offset)
-
-        jQuery.ajax({
-            url: 'https://s9bt0o347g.execute-api.eu-central-1.amazonaws.com/sunrise/2.0?offset=' + offsetStr + ':00&lat=' + lat + '&lon=' + lon + '&date=' + img.data('date').substring(0, 10),
-            dataType: 'xml',
-            success: function(xml) {
-                var sun = $(xml).find('sun')
-                if (dt >= new Date(sun.attr('rise')) && dt <= new Date(sun.attr('set'))) {
-                    img.attr('src', img.attr('src').replace('is_night=1', 'is_night=0'))
-                }
-            }
-        })
-    }
-
     var getTimeInfo = function (date) {
         today = getLocalTime().getDate()
         dt = new Date(date)
@@ -72,24 +54,28 @@ $(function() {
 
     $.ajax({
         type: 'GET',
-        url: 'https://s9bt0o347g.execute-api.eu-central-1.amazonaws.com/locationforecast/1.9?lat=' + lat + '&lon=' + lon,
-        dataType: 'xml',
-        success: function (xml) {
-            $(xml).find('temperature').each(function () {
-                var time = $(this).parents('time')
-                var symbol = $(xml).find('time[from="' + time.attr('from') + '"] symbol')
+        url: 'https://s9bt0o347g.execute-api.eu-central-1.amazonaws.com/locationforecast/2.0/compact.json?lat=' + lat + '&lon=' + lon,
+        dataType: 'json',
+        success: function (json) {
+            var timeseries = json.properties.timeseries
 
-                if (symbol.attr('number')) {
-                    dates.push({
-                        date: time.attr('from'),
-                        symbolTitle: symbol.attr('id'),
-                        symbolUrl: symbol.attr('number') ? 'https://api.met.no/weatherapi/weathericon/1.1?symbol=' + symbol.attr('number') + '&is_night=1&content_type=image/svg%2Bxml' : null,
-                        temperature: time.find('temperature').attr('value'),
-                        windDirection: time.find('windDirection').attr('deg'),
-                        windSpeed: time.find('windSpeed').attr('mps')
-                    })
+            for (let index = 0; index < timeseries.length; index++) {
+                var time = timeseries[index];
+
+                if (!time.data.next_1_hours && !time.data.next_6_hours) {
+                    continue
                 }
-            })
+
+                var summary = time.data.next_1_hours ? time.data.next_1_hours.summary : time.data.next_6_hours.summary
+
+                dates.push({
+                    date: time.time,
+                    symbolUrl: 'https://api.met.no/images/weathericons/svg/' + summary.symbol_code + '.svg',
+                    temperature: time.data.instant.details.air_temperature,
+                    windDirection: time.data.instant.details.wind_from_direction,
+                    windSpeed: time.data.instant.details.wind_speed
+                })
+            }
         }
     }).done(function ( data ) {
         dates = _.orderBy(dates, ['date'])
@@ -136,7 +122,5 @@ $(function() {
         $('#temperature').html(dates[0].temperature + '°')
         $('#forecast').css('width', count * 150 + 'px')
         $('#forecast').html(row.join(''))
-
-        $('.forecast-item img').each(setNight)
     })
 })
