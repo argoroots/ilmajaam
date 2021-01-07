@@ -54,7 +54,7 @@ $(function() {
 
     $.ajax({
         type: 'GET',
-        url: 'https://s9bt0o347g.execute-api.eu-central-1.amazonaws.com/locationforecast/2.0/compact.json?lat=' + lat + '&lon=' + lon,
+        url: 'https://api.met.no/weatherapi/locationforecast/2.0/compact.json?lat=' + lat + '&lon=' + lon,
         dataType: 'json',
         success: function (json) {
             var timeseries = json.properties.timeseries
